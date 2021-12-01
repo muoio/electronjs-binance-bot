@@ -1,0 +1,19 @@
+{
+  "name": "Electronjs",
+  "productName": "Electronjs",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "user",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "crypto-js": "*",
+    "node-fetch": "*"
+  },
+  "devDependencies": {
+    "electron": "16.0.1"
+  }
+}

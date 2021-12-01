@@ -1,0 +1,21 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Ma bang</title>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
+</head>
+
+<body>
+    <div>
+      <button id="buy">Buy</button>
+    </div>
+  <script>
+    const electron = require('electron');
+    const { ipcRenderer } = electron;
+    var buy = document.getElementById("buy");
+    buy.onclick = function(){
+      ipcRenderer.send("action:buy", "BTCUSDT",0.001);
+    }
+  </script>
+</body>
