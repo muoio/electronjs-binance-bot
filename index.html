@@ -1,0 +1,221 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Bot binance</title>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+    <div id="info">
+        <label class='info'> BTC price </label>
+        <label  id="btcPrice"> Connecting </label>
+    </div>
+    <div id="botsLogin">
+        <div id="bot1Login" class='botLogin'>
+            <div class='botLogin_element'>
+                <label> API Key</label>
+                <input type="text" id ="apiKey1">    
+            </div>
+            <div class='botLogin_element'>
+                <label> API Secret</label>
+                <input type="text" id ="apiSecret1"> 
+            </div>
+        </div>
+        <div id="bot2Login" class='botLogin'>
+            <div class='botLogin_element'>
+                <label> API Key </label>
+                <input type="text" id ="apiKey2">    
+            </div>
+            <div class='botLogin_element'>
+                <label> API Secret</label>
+                <input type="text" id ="apiSecret2"> 
+            </div>
+        </div>
+        <button id="botLogin_btn" class='loginBtn'>Bots login</button>
+    </div>
+    <div id="botInput">
+        <div class='botInput_element'>
+            <label> Giá vào lệnh</label>
+            <input type="number" id="center_price">    
+            <label> Biên độ khớp lệnh đầu tiên</label>
+            <input type="number" id="gap_first_trade"> 
+        </div>
+        <div class='botInput_element'>
+            <label> Chênh lệch giữa lệnh chính và lệnh bám</label>
+            <input type="number" id="trades_gap">    
+        </div>
+        <div class='botInput_element'>
+            <label> Khoảng take profit</label>
+            <input type="number" id="take_profit_radius"> 
+        </div>
+        <div class='botInput_element'>
+            <label> Khối lượng 1 lệnh</label>
+            <input type="number" id="quantity">
+        </div>
+        <div id="botControl">
+            <button id="start_bot">Start strategy</button>
+            <button id="stop_bot">Stop strategy</button>
+        </div>
+    </div>
+
+    <div class='allBots'>
+        <div id='bot1' class='botInfo'>
+            <label id='bot1_status' class='bot_name'> bot 1 </label>
+            <div>
+                Balance
+                <label id='balance1' class='balance'> </label>
+            </div>
+            <div>
+                Status 
+                <label id='status1' class="status"> </label>
+            </div>
+            <div id='orders1' class="orders">
+                <label id="mainTrade1"></label>
+                <label id="trailingTrade1"></label>    
+            </div>
+        </div>
+
+        <div id='bot2' class='botInfo'>
+            <label id='bot2_status' class='bot_name'> bot 2 </label>
+            <div>
+                Balance
+                <label id='balance2' class='balance'> </label>
+            </div>
+            <div>
+                Status 
+                <label id='status2' class="status"> </label>
+            </div>
+            <div id='orders2' class="orders">
+                <label id="mainTrade2"></label>
+                <label id="trailingTrade2"></label>
+            </div>
+
+        </div>
+     </div>
+
+
+    <script src="./client.js"></script>
+    <script crossorigin="anonymous" referrerpolicy="no-referrer">
+        
+    botLogin_btn = document.getElementById("botLogin_btn");
+    start_bot = document.getElementById("start_bot");
+    stop_bot = document.getElementById("stop_bot");
+    //stop_bot.style.display = "none";
+
+    class two_bot_strategy{
+        constructor(bot1, bot2){
+            this.bot1 = bot1;
+            this.bot2 = bot2;
+
+            this.play = false;
+            this.state = 0;
+        }
+
+        async close_all_positions(){
+            //this.bot1.close_all_trades();
+            this.bot2.close_all_trades();
+        }
+        async start(){
+            if (this.play == true)   return;
+            let BTC_quantity = (gui.quantity/gui.current_price).toFixed(3);
+            console.log("BTC_quantity "+BTC_quantity);
+            /*await this.bot1.sell(this.symbol, BTC_quantity);
+            this.bot1.state = -1;      */      
+            //this.bot2.trailing_trade = await this.bot2.place_order(gui.symbol, 'BUY', BTC_quantity, gui.center_price-gui.trade_gap,'LIMIT');
+            this.bot2.main_trade = await this.bot2.place_position(gui.symbol, 'SELL', 1);
+            //console.log('this.bot2.trailing_trade',this.bot2.trailing_trade);
+            console.log('this.bot2.main_trade', this.bot2.main_trade);
+            this.play = true;
+        }
+        async onPlay(){
+            //if (gui.current_price > this.bot1.main_trade["price"]+gui.take_profit_radius||
+            if(gui.current_price < this.bot2.main_trade_price-gui.take_profit_radius){
+                await this.stop();
+                gui.center_price = gui.current_price;
+                await this.start();
+            }
+            else{
+                //this.bot1.update_trailing_trade('SELL');
+                //this.bot2.update_trailing_trade('BUY');
+            }
+        }
+        async stop(){
+            this.play = false;
+            this.close_all_positions();
+            this.display_state();
+        }
+
+    }
+
+    //const apiKey = 'tDtUewZcxGiD9UevRlZ8doqspcXBkmqeQ07GhFNhcTdzcicUDsHdXFDe4DQx6qIc'
+    //const apiSecret = 'VSGK1mMnhahPwgknms2nFRNYxIMwY4NuHCioRyV1BoedpG15wSOXT2LVNzbqqVaq'
+    var btcPrice = document.getElementById("btcPrice");
+
+    var balance1 = document.getElementById("balance1");
+    var status1  = document.getElementById("status1");
+    var main_trade1 = document.getElementById("mainTrade1");
+    var trailing_trade1 = document.getElementById("trailingTrade1");
+
+    var balance2 = document.getElementById("balance2");
+    var status2  = document.getElementById("status2");
+    var orders2 = document.getElementById("orders2");
+    var main_trade2 = document.getElementById("mainTrade2");
+    var trailing_trade2 = document.getElementById("trailingTrade2");
+
+
+    var gui_bot1 = new GUI_bot(balance1,status1,main_trade1,trailing_trade1);
+    var gui_bot2 = new GUI_bot(balance2,status2,main_trade2,trailing_trade2);
+    var bot1, bot2;
+    var plan = new two_bot_strategy(bot1,bot2);
+
+    var socket = new WebSocket(hostWss+'/ws/btcusdt@miniTicker');
+    var gui = new GUI();
+    // When message received from web socket then...
+    socket.onmessage = async (event) => {
+        var data = JSON.parse(event.data);
+        let current_price = parseFloat(data['c']);
+        gui.current_price = data['c'];
+        
+        if (plan.play == true)
+            plan.onPlay();
+        /*else if (gui.onBot)
+            if(gui.current_price > gui.center_price - gui.first_trade_gap &&
+                gui.current_price < gui.center_price + gui.first_trade_gap){
+                plan.start();
+            }*/
+    }
+    botLogin_btn.onclick = function(){
+        const apiKey1 = document.getElementById('apiKey1').value;
+        const apiSecret1 = document.getElementById('apiSecret1').value;
+        const apiKey2 = document.getElementById('apiKey2').value;
+        const apiSecret2 = document.getElementById('apiSecret2').value;
+        //document.getElementById('apiSecret1').value = '';
+        //document.getElementById('apiSecret2').value = '';
+        //bot1 = new Client(apiKey1, apiSecret1, gui_bot1);
+        bot2 = new Client(apiKey2, apiSecret2, gui_bot2);
+        bot2.account_stream();
+        //plan = new two_bot_strategy(bot1,bot2);
+    }
+    start_bot.onclick = async function(){
+        //start_bot.style.display = "none";
+        stop_bot.style.display = "inline-block";
+        bot2.main_trade = await bot2.place_position('BTCUSDT', "BUY", 0.001);
+        console.log('bot2.main_trade ',bot2.main_trade);
+        //plan.start();
+    }
+    stop_bot.onclick = async function(){
+        console.log('bot2.main_trade ',bot2.main_trade);
+        let info_ = await bot2.get_order_info(bot2.main_trade);
+        //plan.stop();
+        start_bot.style.display = 'inline-block';
+        stop_bot.style.display = "none";
+    }
+
+  </script>
+</body>
+
+</html>
