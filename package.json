@@ -10,7 +10,9 @@
     "start": "electron ."
   },
   "dependencies": {
-    "crypto-js": "*"
+    "crypto-js": "*",
+    "ws": "*",
+    "axios": "*"
   },
   "devDependencies": {
     "electron": "16.0.1"

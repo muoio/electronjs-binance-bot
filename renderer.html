@@ -2,20 +2,116 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Ma bang</title>
+  <title>Bot binance</title>
   <link rel="stylesheet" type="text/css" href="styles.css"/>
 </head>
 
 <body>
     <div>
+      <label>BTC price<label>
+      <label id="btcPrice">
+    </div>
+    <div class="allBot">
+      <div class="botInfo">
+        <input type="text" placeholder="API Key">
+        <input type="text" placeholder="API Secret">
+        <button id="bot1Login">Bot 1 Login</button>
+        <div>
+          <label>Balance</label>
+          <label id='balance1' class='balance'> </label> 
+        </div>
+      <div>
+        <label>Status</label>
+        <label id='status1' class="status"> </label>
+      </div>
+      </div>
+      <div class="botInfo">
+        <input type="text" placeholder="API Key">
+        <input type="text" placeholder="API Secret">
+        <button id="bot2Login">Bot 2 Login</button>
+        <div>
+          <label>Balance</label>
+          <label id='balance2' class='balance'> </label>
+        </div>
+        <div>
+          <label>Status</label>
+          <label id='status2' class="status"> </label>
+        </div>
+      </div>
+    <div>
+
+    <div id="botInput">
+        <div class='botInput_element'>
+            <label> Giá vào lệnh</label>
+            <input type="number" id="center_price">    
+            <label> Biên độ khớp lệnh đầu tiên</label>
+            <input type="number" id="gap_first_trade"> 
+        </div>
+        <div class='botInput_element'>
+            <label> Chênh lệch giữa lệnh chính và lệnh bám</label>
+            <input type="number" id="trades_gap">    
+        </div>
+        <div class='botInput_element'>
+            <label> Khoảng take profit</label>
+            <input type="number" id="take_profit_radius"> 
+        </div>
+        <div class='botInput_element'>
+            <label> Khối lượng 1 lệnh</label>
+            <input type="number" id="quantity">
+        </div>
+        <div id="botControl">
+            <button id="start_bot">Start strategy</button>
+            <button id="stop_bot">Stop strategy</button>
+        </div>
+    </div>
+    <div>
       <button id="buy">Buy</button>
+    </div>
+    <div class='allBots'>
+        <div id='bot1' class='botInfo'>
+            <label id='bot1_status' class='bot_name'> bot 1 </label>
+            <div>
+                Balance
+                <label id='balance1' class='balance'> </label>
+            </div>
+            <div>
+                Status 
+                <label id='status1' class="status"> </label>
+            </div>
+            <div id='orders1' class="orders">
+                <label id="mainTrade1"></label>
+                <label id="trailingTrade1"></label>    
+            </div>
+        </div>
+
+        <div id='bot2' class='botInfo'>
+            <label id='bot2_status' class='bot_name'> bot 2 </label>
+            <div>
+                Balance
+                <label id='balance2' class='balance'> </label>
+            </div>
+            <div>
+                Status 
+                <label id='status2' class="status"> </label>
+            </div>
+            <div id='orders2' class="orders">
+                <label id="mainTrade2"></label>
+                <label id="trailingTrade2"></label>
+            </div>
+
+        </div>
     </div>
   <script>
     const electron = require('electron');
     const { ipcRenderer } = electron;
+
     var buy = document.getElementById("buy");
+    var btcPrice = document.getElementById("btcPrice");
     buy.onclick = function(){
       ipcRenderer.send("action:buy", "BTCUSDT",0.001);
     }
+    ipcRenderer.on("data:price", (event, current_price) => {
+      btcPrice.innerText = current_price;
+    });
   </script>
 </body>
