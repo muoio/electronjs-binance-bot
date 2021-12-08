@@ -12,23 +12,26 @@
       <label id="btcPrice">
     </div>
     <div class="allBot">
-      <div class="botInfo">
+      <div class="botInfo" id="botInfo1">
         <input type="text" placeholder="API Key">
         <input type="text" placeholder="API Secret">
         <button id="bot1Login">Bot 1 Login</button>
+        <button id="bot1Logout">Logout bot1</button>
+
         <div>
           <label>Balance</label>
           <label id='balance1' class='balance'> </label> 
         </div>
-      <div>
-        <label>Status</label>
-        <label id='status1' class="status"> </label>
+        <div>
+          <label>Status</label>
+          <label id='status1' class="status"> </label>
+        </div>
       </div>
-      </div>
-      <div class="botInfo">
+      <div class="botInfo" id="botInfo2">
         <input type="text" placeholder="API Key">
         <input type="text" placeholder="API Secret">
-        <button id="bot2Login">Bot 2 Login</button>
+        <button id="bot2Login">Bot2 Login</button>
+        <button id="bot2Logout">Logout bot2</button>
         <div>
           <label>Balance</label>
           <label id='balance2' class='balance'> </label>
@@ -67,49 +70,32 @@
     <div>
       <button id="buy">Buy</button>
     </div>
-    <div class='allBots'>
-        <div id='bot1' class='botInfo'>
-            <label id='bot1_status' class='bot_name'> bot 1 </label>
-            <div>
-                Balance
-                <label id='balance1' class='balance'> </label>
-            </div>
-            <div>
-                Status 
-                <label id='status1' class="status"> </label>
-            </div>
-            <div id='orders1' class="orders">
-                <label id="mainTrade1"></label>
-                <label id="trailingTrade1"></label>    
-            </div>
-        </div>
-
-        <div id='bot2' class='botInfo'>
-            <label id='bot2_status' class='bot_name'> bot 2 </label>
-            <div>
-                Balance
-                <label id='balance2' class='balance'> </label>
-            </div>
-            <div>
-                Status 
-                <label id='status2' class="status"> </label>
-            </div>
-            <div id='orders2' class="orders">
-                <label id="mainTrade2"></label>
-                <label id="trailingTrade2"></label>
-            </div>
-
-        </div>
-    </div>
   <script>
     const electron = require('electron');
     const { ipcRenderer } = electron;
-
+    let start_bot = document.getElementById("start_bot");
+    let stop_bot = document.getElementById("stop_bot");
     var buy = document.getElementById("buy");
+    var bot1Login = document.getElementById("bot1Login");
+    var bot2Login = document.getElementById("bot2Login");
+
     var btcPrice = document.getElementById("btcPrice");
-    buy.onclick = function(){
-      ipcRenderer.send("action:buy", "BTCUSDT",0.001);
+    start_bot.onclick = function(){
+      ipcRenderer.send("action:start", 0.001);
     }
+    stop_bot.onclick = function(){
+      ipcRenderer.send("action:stop");
+    }
+    bot1Login.onclick = function(){
+      ipcRenderer.send("action:login");
+    }
+    ipcRenderer.on("action:bot1_logined", (event) =>{
+      console.log("action:bot1_logined");
+      bot1Login.style.display = "none";
+    });
+    ipcRenderer.on("action:bot2_logined", (event) =>{
+      bot2Login.style.display = "none";
+    });
     ipcRenderer.on("data:price", (event, current_price) => {
       btcPrice.innerText = current_price;
     });
