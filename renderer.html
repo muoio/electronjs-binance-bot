@@ -15,7 +15,7 @@
       <div class="botInfo" id="botInfo1">
         <input type="text" placeholder="API Key">
         <input type="text" placeholder="API Secret">
-        <button id="bot1Login">Bot 1 Login</button>
+        <button id="bot1Login_">Bot 1 Login</button>
         <button id="bot1Logout">Logout bot1</button>
 
         <div>
@@ -76,9 +76,9 @@
     let start_bot = document.getElementById("start_bot");
     let stop_bot = document.getElementById("stop_bot");
     var buy = document.getElementById("buy");
-    var bot1Login = document.getElementById("bot1Login");
+    var bot1Login = document.getElementById("bot1Login_");
     var bot2Login = document.getElementById("bot2Login");
-
+    
     var btcPrice = document.getElementById("btcPrice");
     start_bot.onclick = function(){
       ipcRenderer.send("action:start", 0.001);
@@ -86,14 +86,16 @@
     stop_bot.onclick = function(){
       ipcRenderer.send("action:stop");
     }
-    bot1Login.onclick = function(){
+    /*bot1Login.onclick = function(){
       ipcRenderer.send("action:login");
-    }
-    ipcRenderer.on("action:bot1_logined", (event) =>{
+    }*/
+    ipcRenderer.on("action:bot1_logined", async (event) =>{
       console.log("action:bot1_logined");
-      bot1Login.style.display = "none";
+      bot1Login.style.display = 'none';
+
     });
-    ipcRenderer.on("action:bot2_logined", (event) =>{
+    ipcRenderer.on("action:bot2_logined", async (event) =>{
+      console.log("action:bot2_logined");
       bot2Login.style.display = "none";
     });
     ipcRenderer.on("data:price", (event, current_price) => {

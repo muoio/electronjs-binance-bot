@@ -1,6 +1,8 @@
 const electron = require('electron');
 const CryptoJS = require('crypto-js');
 const WebSocket = require('ws');
+const fs = require('fs');
+
 const axios = require('axios');    
 const client = require('./client.js');
 
@@ -34,12 +36,32 @@ async function run(){
         mainWindow.webContents.send("data:price", current_price);
     }
 
-    let bot1  = new Binance(apiKey,apiSecret);
-    let bot2  = new Binance(apiKey,apiSecret);
+    let bot1;//  = new Binance(apiKey,apiSecret);
+    let bot2;//  = new Binance(apiKey,apiSecret);
 
+    mainWindow.webContents.on('did-finish-load', function () {
+        console.log(__dirname);
+        fs.readFile('./bot1.css','utf8', function (err, data) {
+            if (err) throw err;
+            let lines = data.split('\n');
+            let apiKey1 = lines[0];
+            let apiSecret1 = lines[1];
+            try{
+                console.log("SADSA");
+                bot1 = new Binance(apiKey1,apiSecret1);
+                let x = bot1.get_newListenKey();
+                console.log('get_newListenKey'+x);
+                mainWindow.webContents.send("action:bot1_logined");
+            }
+            catch{  }
+        });
+        fs.readFile('./bot2.css','utf8', function (err, data) {
+            if (err) throw err;
+            else mainWindow.webContents.send("action:bot2_logined");
+        });
+    });
+   
     let strategy = new Strategy(bot1,bot2);
-    mainWindow.webContents.send("action:bot1_logined");
-    mainWindow.webContents.send("action:bot2_logined");
 
 
     ipcMain.on("action:start", async (event, amount) =>  {
