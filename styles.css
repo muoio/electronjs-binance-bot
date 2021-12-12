@@ -1,9 +1,39 @@
 .allBot{
-    display: flex;
+    padding-bottom: 1000px;
 }
 .botInfo{
     flex: 50%;
 }
+.btcPrice{
+    text-align: center;
+}
 #botInput{
     display: block;
+    column-count: 2;
+    width: max-content;
+}
+#center_price{
+    width: 100px;
+    text-align: center;
+    
+}
+#gap_first_trade{
+    width: 70px;
+    text-align: center;
+}
+#trades_gap{
+    width: 100px;
+    text-align: center;
+}
+#take_profit_radius{
+    width: 100px;
+    text-align: center;
+}
+#quantity{
+    width: 100px;
+    text-align: center;
+}
+.botInput_element{
+    display: block;
+    height: 30px;
 }

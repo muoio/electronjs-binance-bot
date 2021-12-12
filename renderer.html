@@ -7,99 +7,179 @@
 </head>
 
 <body>
-    <div>
+    <div class='btcPrice'>
       <label>BTC price<label>
-      <label id="btcPrice">
+      <label id="btcPrice" style="color:mediumblue;font-size: large;" >
     </div>
+
+
     <div class="allBot">
       <div class="botInfo" id="botInfo1">
-        <input type="text" placeholder="API Key">
-        <input type="text" placeholder="API Secret">
-        <button id="bot1Login_">Bot 1 Login</button>
-        <button id="bot1Logout">Logout bot1</button>
-
-        <div>
-          <label>Balance</label>
-          <label id='balance1' class='balance'> </label> 
+        <div id="bot1LoginForm">
+          <input id="apiKey1" type="text" placeholder="API Key">
+          <input id="apiSecret1" type="text" placeholder="API Secret">
+          <button id="bot1Login">Bot 1 Login</button>
         </div>
-        <div>
-          <label>Status</label>
-          <label id='status1' class="status"> </label>
+        <div id="bot1LoginedStatus" style="column-count: 3;" hidden>
+          <div >
+            <label>Balance</label>
+            <label id='balance1' class='balance'> </label> 
+          </div>
+          <div >
+            <label>Status</label>
+            <label id='status1' class="status"> </label>
+          </div>
+          <button id="bot1Logout">Logout bot1</button>
+
         </div>
       </div>
       <div class="botInfo" id="botInfo2">
-        <input type="text" placeholder="API Key">
-        <input type="text" placeholder="API Secret">
-        <button id="bot2Login">Bot2 Login</button>
-        <button id="bot2Logout">Logout bot2</button>
-        <div>
-          <label>Balance</label>
-          <label id='balance2' class='balance'> </label>
+        <div id="bot2LoginForm">
+          <input id="apiKey2" type="text" placeholder="API Key">
+          <input id="apiSecret2" type="text" placeholder="API Secret">
+          <button id="bot2Login">Bot2 Login</button>
         </div>
-        <div>
-          <label>Status</label>
-          <label id='status2' class="status"> </label>
+        <div id="bot2LoginedStatus" hidden>
+          <button id="bot2Logout">Logout bot2</button>
+          <div>
+            <label>Balance</label>
+            <label id='balance2' class='balance'> </label>
+          </div>
+          <div>
+            <label>Status</label>
+            <label id='status2' class="status"> </label>
+          </div>
         </div>
       </div>
     <div>
 
+
+
     <div id="botInput">
-        <div class='botInput_element'>
-            <label> Giá vào lệnh</label>
-            <input type="number" id="center_price">    
-            <label> Biên độ khớp lệnh đầu tiên</label>
-            <input type="number" id="gap_first_trade"> 
-        </div>
-        <div class='botInput_element'>
-            <label> Chênh lệch giữa lệnh chính và lệnh bám</label>
-            <input type="number" id="trades_gap">    
-        </div>
-        <div class='botInput_element'>
-            <label> Khoảng take profit</label>
-            <input type="number" id="take_profit_radius"> 
-        </div>
-        <div class='botInput_element'>
-            <label> Khối lượng 1 lệnh</label>
-            <input type="number" id="quantity">
-        </div>
-        <div id="botControl">
-            <button id="start_bot">Start strategy</button>
-            <button id="stop_bot">Stop strategy</button>
-        </div>
+      <div class='botInput_element'>
+          <label > Giá vào lệnh</label>
+          <input type="number" id="center_price">    
+      </div>
+      <div class='botInput_element'>
+          <label> Biên độ khớp lệnh đầu tiên</label>
+          <input type="number" id="gap_first_trade"> 
+      </div>
+      <div class='botInput_element'>
+          <label> Chênh lệch giữa lệnh chính và lệnh bám</label>
+          <input type="number" id="trades_gap">    
+      </div>
+      <div class='botInput_element'>
+          <label> Khoảng take profit</label>
+          <input type="number" id="take_profit_radius"> 
+      </div>
+      <div class='botInput_element'>
+          <label> Khối lượng 1 lệnh</label>
+          <input type="number" id="quantity">
+      </div>
+      <div id="botControl">
+          <button id="start_bot">Start strategy</button>
+          <button id="stop_bot">Stop strategy</button>
+      </div>
     </div>
-    <div>
-      <button id="buy">Buy</button>
-    </div>
+
+
+
+    
+  <div style="display: block;">
+    LOG
+    <textarea id="log" style="display: block;height: 100px;width: 200px;">
+      abc
+    </textarea>
+  </div>
   <script>
     const electron = require('electron');
     const { ipcRenderer } = electron;
     let start_bot = document.getElementById("start_bot");
     let stop_bot = document.getElementById("stop_bot");
-    var buy = document.getElementById("buy");
-    var bot1Login = document.getElementById("bot1Login_");
+    var bot1Login = document.getElementById("bot1Login");
+    var bot1Logout = document.getElementById("bot1Logout")
+    var bot1LoginForm = document.getElementById("bot1LoginForm");
+    var bot1LoginedStatus = document.getElementById("bot1LoginedStatus");
+
+
     var bot2Login = document.getElementById("bot2Login");
+    var bot2Logout = document.getElementById("bot2Logout")
+    var bot2LoginForm = document.getElementById("bot2LoginForm");
+    var bot2LoginedStatus = document.getElementById("bot2LoginedStatus");
     
     var btcPrice = document.getElementById("btcPrice");
+    var center_price = document.getElementById("center_price");
+    var gap_first_trade = document.getElementById("gap_first_trade");
+    var trades_gap = document.getElementById("trades_gap");
+    var take_profit_radius = document.getElementById("take_profit_radius");
+    var quantity = document.getElementById("quantity");
+
     start_bot.onclick = function(){
       ipcRenderer.send("action:start", 0.001);
     }
     stop_bot.onclick = function(){
       ipcRenderer.send("action:stop");
     }
-    /*bot1Login.onclick = function(){
-      ipcRenderer.send("action:login");
-    }*/
-    ipcRenderer.on("action:bot1_logined", async (event) =>{
-      console.log("action:bot1_logined");
-      bot1Login.style.display = 'none';
-
+    bot1Login.onclick = function(){
+      let apiKey1 = document.getElementById("apiKey1").value;
+      let apiSecret1 = document.getElementById("apiSecret1").value;
+      ipcRenderer.send("bot1Login", apiKey1, apiSecret1);
+    }
+    bot1Logout.onclick = function(){
+      bot1LoginForm.style.display = 'block';
+      bot1LoginedStatus.style.display = 'none';
+    }
+    ipcRenderer.on("bot1Logined", (event) =>{
+      console.log("bot1Logined");
+      bot1LoginForm.style.display = 'none';
+      bot1LoginedStatus.style.display = 'block';
     });
-    ipcRenderer.on("action:bot2_logined", async (event) =>{
-      console.log("action:bot2_logined");
-      bot2Login.style.display = "none";
-    });
+    
     ipcRenderer.on("data:price", (event, current_price) => {
       btcPrice.innerText = current_price;
     });
+    
+    ipcRenderer.on('center_price', (event, entryPrice)=>{
+      center_price.value = parseFloat(entryPrice);
+    });
+
+    ipcRenderer.on('gap_first_trade', (event, gap_first_trade_value)=>{
+      console.log("gap_first_trade");
+      gap_first_trade.value = parseFloat(gap_first_trade_value);
+    });
+
+    ipcRenderer.on('trades_gap', (event, trades_gap_value)=>{
+      trades_gap.value = parseFloat(trades_gap_value);
+    });
+
+    ipcRenderer.on('take_profit_radius', (event, take_profit_radius_value)=>{
+      take_profit_radius.value = parseFloat(take_profit_radius_value);
+    });
+
+    ipcRenderer.on('quantity', (event, quantity_value)=>{
+      quantity.value = parseFloat(quantity_value);
+    });
+
+    center_price.onchange = function(){
+      ipcRenderer.send("center_price_change", center_price.value);
+    }
+
+    gap_first_trade.onchange = function(){
+      ipcRenderer.send("gap_first_trade_change", gap_first_trade.value);
+    }
+
+    trades_gap.onchange = function(){
+      ipcRenderer.send("trades_gap_change", trades_gap.value);
+    }
+
+    take_profit_radius.onchange = function(){
+      ipcRenderer.send("take_profit_radius_change", take_profit_radius.value);
+    }
+
+    quantity.onchange = function(){
+      ipcRenderer.send("quantity_change", quantity.value);
+    }
+
+
   </script>
 </body>
