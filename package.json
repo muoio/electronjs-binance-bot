@@ -12,6 +12,7 @@
   "dependencies": {
     "crypto-js": "*",
     "ws": "*",
+    "fs": "*",
     "axios": "*"
   },
   "devDependencies": {

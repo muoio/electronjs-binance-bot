@@ -48,6 +48,22 @@ class Binance{
     }
   }*/
 
+  async checkKey(){
+    const query_string = 'timestamp='+Date.now().toString();
+    let signature = CryptoJS.HmacSHA256(query_string, this.apiSecret).toString();
+    try{
+      let url = hostAPI+'/fapi/v1/multiAssetsMargin?'+query_string+'&signature='+signature;
+      //console.log(url);
+      let future_balance = await this.request.get(url);
+      future_balance = future_balance.data;
+      //console.log('future_balance'+future_balance);
+      return true;
+    }
+    catch{
+      return false;
+    }
+  }
+
   async get_new_listenKey(){
     let new_listen_key = await this.request.post(hostAPI+'/fapi/v1/listenKey');
     return new_listen_key.json();
